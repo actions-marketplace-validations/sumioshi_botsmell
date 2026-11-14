@@ -2,7 +2,7 @@ import type { Rule } from "../types.js";
 import { re, reAtLeast, reUnless } from "./util.js";
 
 // Rótulo técnico de uma palavra ("ex:", "obs:") é uso legítimo de quem escreve.
-const ROTULO_TECNICO = /(^|\s)(ex|obs|link|email|e-mail|cnpj|cpf|senha|user|usuário|usuario|login|token|url|id|ref|nota|ps)\s*:/gi;
+const ROTULO_TECNICO = /(^|\s)(ex|obs|link|email|e-mail|cnpj|cpf|senha|user|usuário|usuario|login|token|url|id|ref|nota|ps|(?:feat|fix|chore|docs|refactor|test|perf|ci|build|style|revert)(?:\([^)]*\))?!?)\s*:/gi;
 const DOIS_PONTOS = /(?<!\d)(?<!https?):(?!\d|\/\/)\s*(\n|\p{L})/u;
 
 // Recibo de leitura abrindo a resposta, antes do conteúdo. O recibo curto sozinho

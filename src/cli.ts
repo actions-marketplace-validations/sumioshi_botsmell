@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { textFromHook } from "./hook.js";
 import { check } from "./index.js";
 import type { CheckOptions, Context, Lang } from "./types.js";
 
@@ -17,12 +18,14 @@ Options
   --timezone <iana>       check "good morning" against the current time there
   --file <path>           read the message from a file
   --json                  print the full result as JSON
+  --claude-hook           run as a Claude Code PreToolUse hook (blocks commit
+                          messages and PR text that smell like a bot)
   -h, --help              show this help
 
 Exit code is 1 when the text smells like a bot, so you can use it in scripts and CI.`;
 
 function parse(argv: string[]) {
-  const opts: CheckOptions & { json?: boolean; file?: string; historyFile?: string } = {};
+  const opts: CheckOptions & { json?: boolean; file?: string; historyFile?: string; claudeHook?: boolean } = {};
   const words: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i] as string;
@@ -35,6 +38,7 @@ function parse(argv: string[]) {
       console.log(HELP);
       process.exit(0);
     } else if (a === "--json") opts.json = true;
+    else if (a === "--claude-hook") opts.claudeHook = true;
     else if (a === "--lang") opts.lang = next() as Lang | "auto";
     else if (a === "--context") opts.context = next() as Context;
     else if (a === "--threshold") opts.threshold = Number(next());
@@ -55,8 +59,25 @@ async function readStdin(): Promise<string> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
+async function claudeHook(opts: CheckOptions) {
+  let input: unknown;
+  try {
+    input = JSON.parse(await readStdin());
+  } catch {
+    process.exit(0); // not a hook payload: never block the agent by accident
+  }
+  const text = textFromHook(input as Parameters<typeof textFromHook>[0]);
+  if (!text) process.exit(0);
+  const r = check(text, { context: "prose", ...opts });
+  if (r.ok) process.exit(0);
+  const lines = r.hits.map((h) => `- "${h.match}": ${h.suggestion}`);
+  console.error(`botsmell: this text reads like a bot (score ${r.score}/${r.threshold}). Rewrite it and try again:\n${lines.join("\n")}`);
+  process.exit(2);
+}
+
 async function main() {
   const { opts, words } = parse(process.argv.slice(2));
+  if (opts.claudeHook) return claudeHook(opts);
   const text = opts.file ? readFileSync(opts.file, "utf8") : words.length ? words.join(" ") : await readStdin();
   if (!text.trim()) {
     console.log(HELP);

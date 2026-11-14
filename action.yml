@@ -1,0 +1,56 @@
+name: botsmell
+description: Fail the check when a pull request, commit message or text file reads like a bot wrote it.
+author: Rodrigo Sumioshi
+branding:
+  icon: alert-triangle
+  color: purple
+inputs:
+  text:
+    description: Text to check. Defaults to the pull request title and body on pull_request events.
+    required: false
+    default: ""
+  file:
+    description: Path to a file to check instead of `text`.
+    required: false
+    default: ""
+  lang:
+    description: en, pt or auto.
+    required: false
+    default: auto
+  context:
+    description: chat or prose. Prose (default here) allows Markdown and bullets.
+    required: false
+    default: prose
+  threshold:
+    description: Score at which the check fails.
+    required: false
+    default: "4"
+  version:
+    description: botsmell version from npm.
+    required: false
+    default: "latest"
+runs:
+  using: composite
+  steps:
+    - name: Check text with botsmell
+      shell: bash
+      env:
+        BS_TEXT: ${{ inputs.text }}
+        BS_FILE: ${{ inputs.file }}
+        BS_LANG: ${{ inputs.lang }}
+        BS_CONTEXT: ${{ inputs.context }}
+        BS_THRESHOLD: ${{ inputs.threshold }}
+        BS_VERSION: ${{ inputs.version }}
+        PR_TITLE: ${{ github.event.pull_request.title }}
+        PR_BODY: ${{ github.event.pull_request.body }}
+      run: |
+        set -euo pipefail
+        args=(--lang "$BS_LANG" --context "$BS_CONTEXT" --threshold "$BS_THRESHOLD")
+        if [ -n "$BS_FILE" ]; then
+          npx -y "botsmell@$BS_VERSION" "${args[@]}" --file "$BS_FILE"
+        else
+          text="$BS_TEXT"
+          if [ -z "$text" ]; then text="$(printf '%s\n\n%s' "${PR_TITLE:-}" "${PR_BODY:-}")"; fi
+          if [ -z "$(echo "$text" | tr -d '[:space:]')" ]; then echo "botsmell: nothing to check"; exit 0; fi
+          printf '%s' "$text" | npx -y "botsmell@$BS_VERSION" "${args[@]}"
+        fi

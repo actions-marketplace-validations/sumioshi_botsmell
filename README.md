@@ -6,21 +6,7 @@
 [![license](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](./LICENSE)
 ![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)
 
-```
-$ npx botsmell "Great question! I'd be happy to help — here's the fix. Let me know if you have any questions."
-
-+2    opening_validation  "Great question"
-      Opens by praising the question or announcing eagerness to help.
-      → Open with the answer or the fact.
-+2    em_dash  "—"
-      Em dash or spaced hyphen joining two clauses, the most common sign of generated text.
-      → Use a comma, a period or a new message.
-+2    closing_reflex  "Let me know if you have any questions"
-      Stock closing line offering more help.
-      → End on the fact or on one concrete question.
-
-score 6/4 · smells like a bot · lang en
-```
+<p align="center"><img src="docs/demo.gif" width="760" alt="botsmell flags a typical assistant reply and lets a plain human message through"></p>
 
 Your support agent, chatbot or email assistant can be accurate and still sound like a template: "Certainly!", "I completely understand your frustration", an em dash in every sentence, a bulleted list in a chat bubble, "Hope this helps!". People notice, and trust drops. botsmell checks a message in microseconds with plain rules, so you can **block it, rewrite it or ask the model to try again** before it is sent.
 
@@ -86,6 +72,38 @@ async function sendReply(chatId: string, draft: string) {
   return queueForHumanReview(chatId, draft);
 }
 ```
+
+## Block bot-sounding commits in Claude Code
+
+Coding agents love em dashes, "seamless" and "ensuring that". Add botsmell as a `PreToolUse` hook and Claude Code gets its commit messages and PR text checked before they are published. When the text smells like a bot, the hook blocks the command and tells the agent what to rewrite.
+
+```jsonc
+// .claude/settings.json
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "npx -y botsmell --claude-hook" }] }
+    ]
+  }
+}
+```
+
+It reads `git commit`, `git tag` and `gh pr|issue|release create|edit|comment`, including heredoc messages, ignores trailers like `Co-Authored-By`, and lets every other command through.
+
+## Check pull requests with GitHub Actions
+
+```yaml
+# .github/workflows/botsmell.yml
+name: botsmell
+on: pull_request
+jobs:
+  smell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: sumioshi/botsmell@v0
+```
+
+By default it checks the PR title and body. Use `with: { file: CHANGELOG.md }` or `with: { text: "..." }` for anything else, plus `lang`, `context` and `threshold`.
 
 ## Use it from the command line
 

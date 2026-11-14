@@ -6,6 +6,7 @@ import type { CheckOptions, Hit, Lang, Result, Rule } from "./types.js";
 
 export type { CheckOptions, Context, Hit, Lang, Result, Rule, Severity } from "./types.js";
 export { detectLang } from "./context.js";
+export { textFromCommand, textFromHook } from "./hook.js";
 
 export const DEFAULT_THRESHOLD = 4;
 

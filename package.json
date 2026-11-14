@@ -1,6 +1,6 @@
 {
   "name": "botsmell",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Lint text for bot smell: catch the phrases, punctuation and habits that make AI-written messages read like a bot. English and Portuguese.",
   "license": "Apache-2.0",
   "author": "Rodrigo Sumioshi (https://rodrigosumioshi.com)",

@@ -1,7 +1,7 @@
 import type { Rule } from "../types.js";
 import { re, reAtLeast, reUnless } from "./util.js";
 
-const TECH_LABEL = /(^|\s)(e\.?g|i\.?e|ps|p\.s|note|ex|url|id|email|e-mail|time|date|ref|tl;?dr)\s*:/gi;
+const TECH_LABEL = /(^|\s)(e\.?g|i\.?e|ps|p\.s|note|ex|url|id|email|e-mail|time|date|ref|tl;?dr|(?:feat|fix|chore|docs|refactor|test|perf|ci|build|style|revert)(?:\([^)]*\))?!?)\s*:/gi;
 const COLON_INTRO = /(?<!\d)(?<!https?):(?!\d|\/\/)\s*(\n|\p{L})/u;
 
 export const en: Rule[] = [
@@ -67,7 +67,7 @@ export const en: Rule[] = [
     message: "Words that language models overuse.",
     suggestion: "Use the plain word: improve, use, check, help, part, area.",
     test: re(
-      /\b(?:delv(?:e|es|ing)|tapestry|testament to|seamless(?:ly)?|leverag(?:e|es|ing)|robust|elevat(?:e|es|ing)|unlock(?:s|ing)? the|navigat(?:e|ing) the (?:complex|ever)|landscape|realm|pivotal|crucial|furthermore|moreover|in conclusion|it'?s worth noting|it'?s important to (?:note|remember)|embark(?:s|ing)? on|foster(?:s|ing)?|streamlin(?:e|es|ing)|cutting-edge|game[- ]changer|holistic|synerg(?:y|ies)|paradigm|meticulous(?:ly)?|commendable|ever-evolving|in today'?s (?:fast-paced|digital)|a myriad of|plethora)\b/i,
+      /\b(?:delv(?:e|es|ing)|tapestry|testament to|seamless(?:ly)?|leverag(?:e|es|ed|ing)|robust|elevat(?:e|es|ing)|unlock(?:s|ing)? the|navigat(?:e|ing) the (?:complex|ever)|landscape|realm|pivotal|crucial|furthermore|moreover|in conclusion|it'?s worth noting|it'?s important to (?:note|remember)|embark(?:s|ing)? on|foster(?:s|ing)?|streamlin(?:e|es|ing)|cutting-edge|game[- ]changer|holistic|synerg(?:y|ies)|paradigm|meticulous(?:ly)?|commendable|ever-evolving|in today'?s (?:fast-paced|digital)|a myriad of|plethora)\b/i,
     ),
   },
   {

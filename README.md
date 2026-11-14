@@ -156,6 +156,8 @@ The exit code is `1` when the text smells like a bot, so it works in scripts, gi
 | `same_opening` | +2 | Same first words as a recent message (needs `history`) |
 | `greeting_time` | +3 | "Good morning" / "bom dia" at the wrong time for the reader (needs `now`) |
 
+Why these rules: [The tells that make AI text read like a bot](https://wacrew.com.br/en/ai-text-tells/).
+
 ## What it is not
 
 botsmell is not an AI detector and does not tell you who wrote a text. It flags **habits** that make a message read like a template, whoever wrote it. A human can trip a rule and a model can pass them all. Use it to make your bot's messages better, not to judge people.

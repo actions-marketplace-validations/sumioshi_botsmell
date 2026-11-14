@@ -1,0 +1,70 @@
+{
+  "name": "botsmell",
+  "version": "0.1.0",
+  "description": "Lint text for bot smell: catch the phrases, punctuation and habits that make AI-written messages read like a bot. English and Portuguese.",
+  "license": "Apache-2.0",
+  "author": "Rodrigo Sumioshi (https://rodrigosumioshi.com)",
+  "homepage": "https://github.com/sumioshi/botsmell#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sumioshi/botsmell.git"
+  },
+  "bugs": "https://github.com/sumioshi/botsmell/issues",
+  "keywords": [
+    "ai",
+    "llm",
+    "lint",
+    "linter",
+    "ai-text",
+    "ai-writing",
+    "humanizer",
+    "chatbot",
+    "customer-support",
+    "slop",
+    "em-dash",
+    "ai-detection",
+    "prompt",
+    "agent"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "bin": {
+    "botsmell": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.12"
+  }
+}
